@@ -36,6 +36,28 @@ router.get("/:email",(req,res)=>{
 });
 
 
+//GET all users with the same lastName
+router.get('/lastName/:lastName', (req, res) => {
+  const lastName = req.params.lastName
+  let filtered_users = users.filter(item => item.lastName === lastName)
+  res.send(filtered_users)
+})
+
+const getDateFromString = (strDate) => {
+  let [dd,mm,yyyy] = strDate.split('-')
+  return new Date(yyyy+ '/' +  mm + '/' + dd)
+}
+
+//GET sorted users by DOB
+router.get('/sort', (req, res) => {
+  let sortedUsers = users.sort((a,b) => {
+    let dateA = getDateFromString(a.DOB)
+    let dateB = getDateFromString(b.DOB)
+    return  dateA - dateB
+  }) 
+  res.send(sortedUsers)
+})
+
 // POST request: Create a new user
 router.post("/",(req,res)=>{
   const query = req.query
@@ -51,8 +73,8 @@ router.post("/",(req,res)=>{
 
 // PUT request: Update the details of a user by email ID
 router.put("/:email", (req, res) => {
-  const email = req.params.email
-  let filtered_users = users.filter(item => item.email.toLowerCase() === email.toLowerCase())
+  const email = req.params.email.toLocaleLowerCase()
+  let filtered_users = users.filter(item => item.email.toLowerCase() === email)
 
   if (filtered_users.length > 0) {
     const user = filtered_users[0]
